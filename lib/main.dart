@@ -7,6 +7,7 @@ import 'package:flutter_redux_example/state/AppState.dart';
 import 'package:flutter_redux_example/state/AppReducer.dart';
 import 'package:flutter_redux_example/state/Actions.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 void main() => runApp(TodoListApp());
 
@@ -14,7 +15,7 @@ class TodoListApp extends StatelessWidget {
   // Create Redux Store
   final Store<AppState> store = Store<AppState>(AppReducer.reducer,
       initialState: AppState.initial(),
-      middleware: [LoggingMiddleware.printer()]);
+      middleware: [LoggingMiddleware.printer(), thunkMiddleware]);
 
   @override
   Widget build(BuildContext context) => StoreProvider<AppState>(
@@ -29,8 +30,7 @@ class TodoListApp extends StatelessWidget {
               body: Container(padding: EdgeInsets.all(8), child: TodoList()),
               floatingActionButton: StoreConnector<AppState, VoidCallback>(
                 converter: (store) {
-                  return () => store.dispatch(
-                      AddTodoAction(payload: TodoItem(name: "Adding Todo")));
+                  return () => store.dispatch(thunkaction(store, TodoItem(name: "Thunk")));
                 },
                 builder: (context, callback) {
                   return FloatingActionButton(
